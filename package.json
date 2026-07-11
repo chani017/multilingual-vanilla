@@ -1,22 +1,22 @@
 {
-  "name": "multilingual-vanilla",
-  "version": "1.0.2",
-  "description": "Vanilla JavaScript multilingual typesetting helper inspired by multilingual.js.",
-  "main": "src/multilingual.js",
-  "module": "src/multilingual.js",
-  "files": [
-    "src",
-    "dist",
-    "README.md"
-  ],
-  "scripts": {
-    "check": "node --check src/multilingual.js && node --check dist/multilingual.js"
-  },
-  "keywords": [
-    "CJK",
-    "typography",
-    "multilingual",
-    "vanilla-js"
-  ],
-  "license": "MIT"
+	"name": "multilingual-vanilla",
+	"version": "1.0.3",
+	"description": "Vanilla JavaScript multilingual typesetting helper inspired by multilingual.js.",
+	"main": "src/multilingual.js",
+	"module": "src/multilingual.js",
+	"files": [
+		"src",
+		"dist",
+		"README.md"
+	],
+	"scripts": {
+		"check": "node --check src/multilingual.js && node --check dist/multilingual.js"
+	},
+	"keywords": [
+		"CJK",
+		"typography",
+		"multilingual",
+		"vanilla-js"
+	],
+	"license": "MIT"
 }
