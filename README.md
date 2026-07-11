@@ -8,7 +8,7 @@
 ## 사용법
 
 ```html
-<script src="dist/multilingual-vanilla.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/multilingual-vanilla/dist/multilingual-vanilla.js"></script>
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		MultiLingual.run("body");
