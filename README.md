@@ -1,6 +1,6 @@
 # multilingual-vanilla
 
-`multilingual.js`의 핵심 동작을 jQuery 없이 사용할 수 있도록 만든 바닐라 JavaScript 버전입니다.
+multilingual.js(https://github.com/multilingualjs/multilingual.js)의 핵심 동작을 jQuery 없이 사용할 수 있도록 만든 바닐라 JavaScript 버전입니다.
 
 원본 라이브러리처럼 특정 문자셋을 찾아 `<span>`으로 감싸고, `ml-en`, `ml-num` 같은 클래스를 부여합니다. 차이는 DOM 텍스트 노드만 직접 처리한다는 점입니다. 그래서 `innerHTML` 문자열 치환보다 안전하고, 이미 처리된 span을 다시 감싸지 않으며, `script/style/pre/code` 영역은 기본적으로 건너뜁니다.
 
