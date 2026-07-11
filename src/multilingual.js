@@ -24,6 +24,8 @@
     punct: "[（）().#\\^\\\\\\-&,;:<>“”‘’/@%*，、。」]+"
   };
 
+  var DEFAULT_CONFIGURATION = ["ko", "en"];
+
   var DEFAULT_SKIP_SELECTOR =
     "script, style, textarea, input, select, option, code, pre, [data-ml-ignore]";
 
@@ -31,7 +33,7 @@
     params = params || {};
 
     this.containers = normalizeContainers(params.containers || params.container || []);
-    this.configuration = params.configuration || params.config || [];
+    this.configuration = getConfiguration(params);
     this.prefix = params.prefix || "ml-";
     this.skipSelector = params.skipSelector || DEFAULT_SKIP_SELECTOR;
     this.processedAttribute = params.processedAttribute || "data-ml-processed";
@@ -47,12 +49,15 @@
   }
 
   MultiLingual.presets = PRESETS;
+  MultiLingual.defaultConfiguration = DEFAULT_CONFIGURATION.slice();
   MultiLingual.skipSelector = DEFAULT_SKIP_SELECTOR;
 
   MultiLingual.run = function (containers, configuration, options) {
     options = options || {};
     options.containers = containers;
-    options.configuration = configuration;
+    if (configuration !== undefined) {
+      options.configuration = configuration;
+    }
     return new MultiLingual(options);
   };
 
@@ -202,6 +207,18 @@
     }
 
     return [];
+  }
+
+  function getConfiguration(params) {
+    if (Object.prototype.hasOwnProperty.call(params, "configuration")) {
+      return params.configuration;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(params, "config")) {
+      return params.config;
+    }
+
+    return DEFAULT_CONFIGURATION.slice();
   }
 
   function collectTextNodes(container, skipSelector, processedAttribute) {

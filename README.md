@@ -12,7 +12,7 @@
 <script src="dist/multilingual.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    MultiLingual.run(".content", ["en", "num"]);
+    MultiLingual.run(".content");
   });
 </script>
 ```
@@ -21,9 +21,14 @@
 
 ```js
 new MultiLingual({
-  containers: document.getElementsByClassName("content"),
-  configuration: ["en", "num"]
+  containers: document.getElementsByClassName("content")
 });
+```
+
+설정을 생략하면 기본으로 `["ko", "en"]`이 적용되어 한글은 `.ml-ko`, 영문은 `.ml-en`으로 감싸집니다. 특정 문자셋만 쓰고 싶으면 명시적으로 넘기면 됩니다.
+
+```js
+MultiLingual.run(".content", ["en", "num"]);
 ```
 
 ## 처리 예시
@@ -108,7 +113,7 @@ MultiLingual.run(".content", [
 ```js
 new MultiLingual({
   containers: ".content",
-  configuration: ["en", "num"],
+  configuration: ["ko", "en"],
   prefix: "ml-",
   skipSelector: "script, style, textarea, input, select, option, code, pre, [data-ml-ignore]",
   processedAttribute: "data-ml-processed"
@@ -124,13 +129,14 @@ new MultiLingual({
 ## 되돌리기
 
 ```js
-var ml = MultiLingual.run(".content", ["en", "num"]);
+var ml = MultiLingual.run(".content");
 ml.unwrap();
 ```
 
 ## 원본과 달라진 점
 
 - jQuery가 필요 없습니다.
+- 설정을 생략하면 기본으로 `ko`, `en`을 처리합니다.
 - `document.querySelectorAll`, DOM Element, NodeList, HTMLCollection 모두 컨테이너로 받을 수 있습니다.
 - `script`, `style`, `pre`, `code`, 폼 입력 요소, `[data-ml-ignore]` 내부는 기본적으로 건너뜁니다.
 - 처리된 span에는 `data-ml-processed`가 붙어 중복 wrapping을 방지합니다.
