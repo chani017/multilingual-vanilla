@@ -24,8 +24,6 @@
     punct: "[（）().#\\^\\\\\\-&,;:<>“”‘’/@%*，、。」]+"
   };
 
-  var DEFAULT_CONFIGURATION = ["ko", "en"];
-
   var DEFAULT_SKIP_SELECTOR =
     "script, style, textarea, input, select, option, code, pre, [data-ml-ignore]";
 
@@ -49,7 +47,7 @@
   }
 
   MultiLingual.presets = PRESETS;
-  MultiLingual.defaultConfiguration = DEFAULT_CONFIGURATION.slice();
+  MultiLingual.autoConfiguration = getAutoConfiguration;
   MultiLingual.skipSelector = DEFAULT_SKIP_SELECTOR;
 
   MultiLingual.run = function (containers, configuration, options) {
@@ -209,6 +207,10 @@
     return [];
   }
 
+  function getAutoConfiguration() {
+    return Object.keys(PRESETS);
+  }
+
   function getConfiguration(params) {
     if (Object.prototype.hasOwnProperty.call(params, "configuration")) {
       return params.configuration;
@@ -218,7 +220,7 @@
       return params.config;
     }
 
-    return DEFAULT_CONFIGURATION.slice();
+    return getAutoConfiguration();
   }
 
   function collectTextNodes(container, skipSelector, processedAttribute) {
