@@ -11,7 +11,7 @@
 <script src="dist/multilingual.js"></script>
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
-		MultiLingual.run(".content");
+		MultiLingual.run("body");
 	});
 </script>
 ```
@@ -22,14 +22,20 @@ CSS 파일은 필요 없습니다. 이 라이브러리는 텍스트를 `<span cl
 
 ```js
 new MultiLingual({
-	containers: document.getElementsByClassName("content"),
+	container: document.body,
 });
 ```
 
 설정을 생략하면 기본으로 `["ko", "en"]`이 적용되어 한글은 `.ml-ko`, 영문은 `.ml-en`으로 감싸집니다. 특정 문자셋만 쓰고 싶으면 명시적으로 넘기면 됩니다.
 
 ```js
-MultiLingual.run(".content", ["en", "num"]);
+MultiLingual.run("body", ["en", "num"]);
+```
+
+특정 클래스에 적용하고 싶다면 body 대신 해당 클래스 명으로 교체하여 사용하면 됩니다.
+
+```js
+MultiLingual.run(".text-content");
 ```
 
 ## 처리 예시
@@ -90,7 +96,7 @@ MultiLingual.run(".content", ["en", "num"]);
 규칙은 배열 앞쪽부터 먼저 매칭됩니다. 괄호처럼 `punct`와 겹치는 문자를 따로 다루려면 커스텀 규칙을 `punct`보다 앞에 두세요.
 
 ```js
-MultiLingual.run(".content", [
+MultiLingual.run("body", [
 	"en",
 	{
 		className: "ml-parentheses",
@@ -103,7 +109,7 @@ MultiLingual.run(".content", [
 정규식을 직접 지정할 수도 있습니다.
 
 ```js
-MultiLingual.run(".content", [
+MultiLingual.run("body", [
 	{
 		className: "ml-uppercase",
 		regex: "[A-Z]+",
@@ -115,7 +121,7 @@ MultiLingual.run(".content", [
 
 ```js
 new MultiLingual({
-	containers: ".content",
+	containers: "body",
 	configuration: ["ko", "en"],
 	prefix: "ml-",
 	skipSelector:
@@ -133,7 +139,7 @@ new MultiLingual({
 ## 되돌리기
 
 ```js
-var ml = MultiLingual.run(".content");
+var ml = MultiLingual.run("body");
 ml.unwrap();
 ```
 

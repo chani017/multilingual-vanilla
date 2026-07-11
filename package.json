@@ -1,16 +1,15 @@
 {
 	"name": "multilingual-vanilla",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Vanilla JavaScript multilingual typesetting helper inspired by multilingual.js.",
-	"main": "src/multilingual.js",
-	"module": "src/multilingual.js",
+	"main": "dist/multilingual.js",
+	"module": "dist/multilingual.js",
 	"files": [
-		"src",
 		"dist",
 		"README.md"
 	],
 	"scripts": {
-		"check": "node --check src/multilingual.js && node --check dist/multilingual.js"
+		"check": "node --check dist/multilingual.js"
 	},
 	"keywords": [
 		"CJK",
