@@ -1,13 +1,12 @@
 {
   "name": "multilingual-vanilla",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Vanilla JavaScript multilingual typesetting helper inspired by multilingual.js.",
   "main": "src/multilingual.js",
   "module": "src/multilingual.js",
   "files": [
     "src",
     "dist",
-    "multilingual.css",
     "README.md"
   ],
   "scripts": {

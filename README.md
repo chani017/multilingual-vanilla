@@ -8,7 +8,6 @@
 ## 사용법
 
 ```html
-<link rel="stylesheet" href="multilingual.css" />
 <script src="dist/multilingual.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -16,6 +15,8 @@
   });
 </script>
 ```
+
+CSS 파일은 필요 없습니다. 이 라이브러리는 텍스트를 `<span class="ml-ko">`, `<span class="ml-en">`처럼 감싸기만 하고, 폰트/자간/색상/baseline은 바꾸지 않습니다. 필요한 타이포그래피 보정은 프로젝트 CSS에서 직접 작성하면 됩니다.
 
 또는 원본 npm API와 비슷하게 쓸 수 있습니다.
 
