@@ -1,0 +1,16 @@
+/* Optional starter styles. Adjust these classes to fit your typography. */
+.ml-en,
+.ml-num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: -0.02em;
+  position: relative;
+  top: -0.03em;
+}
+
+.ml-num {
+  color: #666;
+}
+
+.ml-punct {
+  letter-spacing: -0.04em;
+}

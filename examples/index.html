@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>multilingual-vanilla demo</title>
+    <link rel="stylesheet" href="../multilingual.css" />
+    <style>
+      body {
+        max-width: 720px;
+        margin: 48px auto;
+        padding: 0 20px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+        font-size: 20px;
+        line-height: 1.75;
+      }
+
+      .ml-parentheses {
+        color: #6f42c1;
+        letter-spacing: -0.08em;
+        position: relative;
+        top: -0.04em;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="content">
+      <p>모든 CCL의 메타데이터에는 최소한 license 값을 기술하는 1개의 RDF 트리플이 반드시 포함됩니다.</p>
+      <p>괄호(parentheses)와 숫자 2026, punctuation도 각각 제어할 수 있습니다.</p>
+      <pre data-ml-ignore>code/pre 영역은 건드리지 않습니다: const license = "CCL";</pre>
+    </main>
+
+    <script src="../dist/multilingual.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        MultiLingual.run(".content", [
+          "en",
+          "num",
+          {
+            className: "ml-parentheses",
+            charset: "()"
+          },
+          "punct"
+        ]);
+      });
+    </script>
+  </body>
+</html>
