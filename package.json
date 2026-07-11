@@ -1,6 +1,6 @@
 {
 	"name": "multilingual-vanilla",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "Vanilla JavaScript multilingual typesetting helper inspired by multilingual.js.",
 	"main": "dist/multilingual-vanilla.js",
 	"module": "dist/multilingual-vanilla.js",
