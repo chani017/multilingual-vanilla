@@ -34,6 +34,7 @@
     this.configuration = getConfiguration(params);
     this.prefix = params.prefix || "ml-";
     this.contextualJapaneseHan = params.contextualJapaneseHan !== false;
+    this.contextualPunctuation = params.contextualPunctuation !== false;
     this.skipSelector = params.skipSelector || DEFAULT_SKIP_SELECTOR;
     this.processedAttribute = params.processedAttribute || "data-ml-processed";
     this.processedClass = params.processedClass || "ml-processed";
@@ -145,13 +146,26 @@
   };
 
   MultiLingual.prototype.resolveClassName = function (text, className, textNode) {
+    var parent = textNode && textNode.parentElement;
+
     if (
       this.contextualJapaneseHan &&
       className === this.prefix + "cn" &&
-      textNode &&
-      isJapaneseContext(textNode.parentElement)
+      parent &&
+      isJapaneseContext(parent)
     ) {
       return this.prefix + "jp";
+    }
+
+    if (
+      this.contextualPunctuation &&
+      className === this.prefix + "punct" &&
+      parent
+    ) {
+      var contextualClassName = getContextualClassName(parent, this.prefix);
+      if (contextualClassName && contextualClassName !== className) {
+        return className + " " + contextualClassName;
+      }
     }
 
     return className;
@@ -313,18 +327,34 @@
   }
 
   function isJapaneseContext(element) {
+    return getContextualClassName(element, "ml-") === "ml-jp";
+  }
+
+  function getContextualClassName(element, prefix) {
     var current = element;
 
     while (current && current.nodeType === 1) {
       var lang = current.getAttribute && current.getAttribute("lang");
       if (lang) {
-        return /^(ja|jp)(-|$)/i.test(lang);
+        return getClassNameFromLang(lang, prefix);
       }
 
       current = current.parentElement;
     }
 
-    return false;
+    return "";
+  }
+
+  function getClassNameFromLang(lang, prefix) {
+    var normalized = String(lang).toLowerCase();
+
+    if (/^ko(-|$)/.test(normalized)) return prefix + "ko";
+    if (/^(ja|jp)(-|$)/.test(normalized)) return prefix + "jp";
+    if (/^(zh|cn)(-|$)/.test(normalized)) return prefix + "cn";
+    if (/^en(-|$)/.test(normalized)) return prefix + "en";
+    if (/^ar(-|$)/.test(normalized)) return prefix + "ar";
+
+    return "";
   }
 
   function matches(element, selector) {

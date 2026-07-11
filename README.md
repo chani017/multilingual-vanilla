@@ -1,7 +1,7 @@
 # multilingual-vanilla
 
 `multilingual-vanilla`는 [multilingual.js](https://github.com/multilingualjs/multilingual.js)의 다국어 섞어짜기를 jQuery 없이 사용할 수 있도록 만든 바닐라 JavaScript 버전입니다.
-모든 동작 원리는 위 라이브러리에 기반하고 있음을 밝힙니다.
+모든 동작 원리는 위 라이브러리에 기반하고 있음을 미리 밝힙니다.
 
 원본 라이브러리처럼 특정 문자셋을 찾아 `<span>`으로 감싸고, `ml-ko`, `ml-en`, `ml-num` 같은 클래스를 부여합니다. 차이는 DOM 텍스트 노드만 직접 처리한다는 점입니다. 그래서 `innerHTML` 문자열 치환보다 안전하고, 이미 처리된 span을 다시 감싸지 않으며, `script/style/pre/code` 영역은 기본적으로 건너뜁니다.
 
@@ -71,8 +71,7 @@ MultiLingual.run(".text-content");
 	<span class="ml-ko">의</span>
 	<span class="ml-ko">서로</span>
 	<span class="ml-ko">다른</span>
-	<span class="ml-en">height</span>, 
-  <span class="ml-en">weight</span>,
+	<span class="ml-en">height</span>, <span class="ml-en">weight</span>,
 	<span class="ml-en">rhythm</span>
 	<span class="ml-ko">을</span>
 	<span class="ml-ko">조율해</span>
@@ -145,7 +144,9 @@ new MultiLingual({
 `data-ml-ignore`를 붙인 영역은 처리하지 않습니다.
 
 ```html
-<pre data-ml-ignore>이 태그에 묶인 텍스트에는 라이브러리가 적용되지 않습니다.</pre>
+<pre data-ml-ignore>
+이 태그에 묶인 텍스트에는 라이브러리가 적용되지 않습니다.</pre
+>
 ```
 
 ## 되돌리기
