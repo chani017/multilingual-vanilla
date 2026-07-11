@@ -26,7 +26,17 @@ new MultiLingual({
 });
 ```
 
-설정을 생략하면 `PRESETS`에 등록된 기본 문자셋이 자동으로 적용됩니다. 한글이 있으면 `.ml-ko`, 영문이 있으면 `.ml-en`, 숫자가 있으면 `.ml-num`처럼 대응하는 class로 감싸집니다. 특정 문자셋만 쓰고 싶으면 명시적으로 넘기면 됩니다.
+설정을 생략하면 `PRESETS`에 등록된 기본 문자셋 중 문장부호를 제외한 문자셋이 자동으로 적용됩니다. 한글이 있으면 `.ml-ko`, 영문이 있으면 `.ml-en`, 숫자가 있으면 `.ml-num`처럼 대응하는 class로 감싸집니다. 문장부호는 CJK 금칙 줄바꿈을 방해할 수 있어 자동 적용에서 제외됩니다. 필요한 경우 `punctuation` 옵션으로 원하는 문장부호만 추가할 수 있습니다.
+
+또한 `lang="ja"` 또는 `lang="jp"` 문맥 안의 한자는 기본적으로 `.ml-jp`로 처리됩니다. 일본어 문장 안의 한자가 중국어 폰트 규칙인 `.ml-cn`을 타지 않게 하기 위한 보정입니다. 이 동작을 끄려면 `contextualJapaneseHan: false`를 넘기면 됩니다.
+
+```js
+MultiLingual.run("body", {
+	punctuation: "?!(),.，。、；;：“”‘’「」『』（）-_",
+});
+```
+
+특정 문자셋만 쓰고 싶으면 배열로 명시하면 됩니다.
 
 ```js
 MultiLingual.run("body", ["en", "num"]);
@@ -86,7 +96,7 @@ MultiLingual.run(".text-content");
 | `en`    | `.ml-en`    | `[A-Za-z]+`                         |
 | `ko`    | `.ml-ko`    | `[ㄱ-ㅎ가-힣ㅏ-ㅣ]+`                |
 | `jp`    | `.ml-jp`    | 히라가나/가타카나                   |
-| `cn`    | `.ml-cn`    | CJK 한자 범위                       |
+| `cn`    | `.ml-cn`    | CJK 한자 범위. 단, `lang="ja"` 문맥에서는 기본적으로 `.ml-jp` 처리 |
 | `ar`    | `.ml-ar`    | 아랍 문자 범위                      |
 | `num`   | `.ml-num`   | `[0-9]+`                            |
 | `punct` | `.ml-punct` | 괄호, 마침표, 쉼표 등 주요 문장부호 |
@@ -127,6 +137,7 @@ new MultiLingual({
 	skipSelector:
 		"script, style, textarea, input, select, option, code, pre, [data-ml-ignore]",
 	processedAttribute: "data-ml-processed",
+	contextualJapaneseHan: true,
 });
 ```
 
@@ -146,7 +157,7 @@ ml.unwrap();
 ## 원본과 달라진 점
 
 - jQuery가 필요 없습니다.
-- 설정을 생략하면 `PRESETS`에 등록된 문자셋을 자동으로 처리합니다.
+- 설정을 생략하면 `punct`를 제외한 `PRESETS` 문자셋을 자동으로 처리합니다.
 - `document.querySelectorAll`, DOM Element, NodeList, HTMLCollection 모두 컨테이너로 받을 수 있습니다.
 - `script`, `style`, `pre`, `code`, 폼 입력 요소, `[data-ml-ignore]` 내부는 기본적으로 건너뜁니다.
 - 처리된 span에는 `data-ml-processed`가 붙어 중복 wrapping을 방지합니다.

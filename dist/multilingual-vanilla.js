@@ -33,6 +33,7 @@
     this.containers = normalizeContainers(params.containers || params.container || []);
     this.configuration = getConfiguration(params);
     this.prefix = params.prefix || "ml-";
+    this.contextualJapaneseHan = params.contextualJapaneseHan !== false;
     this.skipSelector = params.skipSelector || DEFAULT_SKIP_SELECTOR;
     this.processedAttribute = params.processedAttribute || "data-ml-processed";
     this.processedClass = params.processedClass || "ml-processed";
@@ -51,6 +52,15 @@
   MultiLingual.skipSelector = DEFAULT_SKIP_SELECTOR;
 
   MultiLingual.run = function (containers, configuration, options) {
+    if (configuration === null) {
+      configuration = undefined;
+    }
+
+    if (isOptionsObject(configuration)) {
+      options = configuration;
+      configuration = undefined;
+    }
+
     options = options || {};
     options.containers = containers;
     if (configuration !== undefined) {
@@ -100,7 +110,8 @@
         fragment.appendChild(document.createTextNode(text.slice(lastIndex, index)));
       }
 
-      fragment.appendChild(this.createWrappedNode(value, this.getClassNameFromMatch(match)));
+      var className = this.resolveClassName(value, this.getClassNameFromMatch(match), textNode);
+      fragment.appendChild(this.createWrappedNode(value, className));
       lastIndex = index + value.length;
 
       if (value.length === 0) {
@@ -131,6 +142,19 @@
     }
 
     return "";
+  };
+
+  MultiLingual.prototype.resolveClassName = function (text, className, textNode) {
+    if (
+      this.contextualJapaneseHan &&
+      className === this.prefix + "cn" &&
+      textNode &&
+      isJapaneseContext(textNode.parentElement)
+    ) {
+      return this.prefix + "jp";
+    }
+
+    return className;
   };
 
   MultiLingual.prototype.normalizeConfiguration = function (configuration) {
@@ -208,19 +232,30 @@
   }
 
   function getAutoConfiguration() {
-    return Object.keys(PRESETS);
+    return Object.keys(PRESETS).filter(function (key) {
+      return key !== "punct";
+    });
   }
 
   function getConfiguration(params) {
+    var configuration;
+
     if (Object.prototype.hasOwnProperty.call(params, "configuration")) {
-      return params.configuration;
+      configuration = params.configuration;
+    } else if (Object.prototype.hasOwnProperty.call(params, "config")) {
+      configuration = params.config;
+    } else {
+      configuration = getAutoConfiguration();
     }
 
-    if (Object.prototype.hasOwnProperty.call(params, "config")) {
-      return params.config;
+    configuration = Array.isArray(configuration) ? configuration.slice() : configuration;
+
+    var punctuationRule = getPunctuationRule(params);
+    if (punctuationRule && Array.isArray(configuration) && !hasPunctuationRule(configuration)) {
+      configuration.push(punctuationRule);
     }
 
-    return getAutoConfiguration();
+    return configuration;
   }
 
   function collectTextNodes(container, skipSelector, processedAttribute) {
@@ -277,6 +312,21 @@
     container.normalize();
   }
 
+  function isJapaneseContext(element) {
+    var current = element;
+
+    while (current && current.nodeType === 1) {
+      var lang = current.getAttribute && current.getAttribute("lang");
+      if (lang) {
+        return /^(ja|jp)(-|$)/i.test(lang);
+      }
+
+      current = current.parentElement;
+    }
+
+    return false;
+  }
+
   function matches(element, selector) {
     if (!selector || !element || element.nodeType !== 1) return false;
 
@@ -288,6 +338,59 @@
 
     return fn ? fn.call(element, selector) : false;
   }
+
+  function isOptionsObject(value) {
+    return !!(
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      !value.className &&
+      !value.charset &&
+      !value.regex
+    );
+  }
+
+  function getPunctuationRule(params) {
+    var value;
+
+    if (Object.prototype.hasOwnProperty.call(params, "punctuation")) {
+      value = params.punctuation;
+    } else if (Object.prototype.hasOwnProperty.call(params, "punct")) {
+      value = params.punct;
+    } else if (params.includePunctuation === true) {
+      value = true;
+    }
+
+    if (!value) return null;
+    if (value === true) return "punct";
+
+    if (typeof value === "string") {
+      return {
+        key: "punct",
+        className: params.punctuationClass || (params.prefix || "ml-") + "punct",
+        charset: value
+      };
+    }
+
+    if (value && typeof value === "object") {
+      return value;
+    }
+
+    return null;
+  }
+
+  function hasPunctuationRule(configuration) {
+    for (var i = 0; i < configuration.length; i += 1) {
+      var rule = configuration[i];
+      if (rule === "punct") return true;
+      if (rule && typeof rule === "object" && (rule.key === "punct" || rule.className === "ml-punct")) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
 
   function computeCustomRegex(charset) {
     return "[" + escapeRegexStr(String(charset)) + "]+";
