@@ -71,7 +71,8 @@ MultiLingual.run(".text-content");
 	<span class="ml-ko">의</span>
 	<span class="ml-ko">서로</span>
 	<span class="ml-ko">다른</span>
-	<span class="ml-en">height</span>, <span class="ml-en">weight</span>,
+	<span class="ml-en">height</span>, 
+  <span class="ml-en">weight</span>,
 	<span class="ml-en">rhythm</span>
 	<span class="ml-ko">을</span>
 	<span class="ml-ko">조율해</span>
@@ -91,15 +92,15 @@ MultiLingual.run(".text-content");
 
 ## 기본 문자셋
 
-| 이름    | 클래스      | 범위                                |
-| ------- | ----------- | ----------------------------------- |
-| `en`    | `.ml-en`    | `[A-Za-z]+`                         |
-| `ko`    | `.ml-ko`    | `[ㄱ-ㅎ가-힣ㅏ-ㅣ]+`                |
-| `jp`    | `.ml-jp`    | 히라가나/가타카나                   |
+| 이름    | 클래스      | 범위                                                               |
+| ------- | ----------- | ------------------------------------------------------------------ |
+| `en`    | `.ml-en`    | `[A-Za-z]+`                                                        |
+| `ko`    | `.ml-ko`    | `[ㄱ-ㅎ가-힣ㅏ-ㅣ]+`                                               |
+| `jp`    | `.ml-jp`    | 히라가나/가타카나                                                  |
 | `cn`    | `.ml-cn`    | CJK 한자 범위. 단, `lang="ja"` 문맥에서는 기본적으로 `.ml-jp` 처리 |
-| `ar`    | `.ml-ar`    | 아랍 문자 범위                      |
-| `num`   | `.ml-num`   | `[0-9]+`                            |
-| `punct` | `.ml-punct` | 괄호, 마침표, 쉼표 등 주요 문장부호 |
+| `ar`    | `.ml-ar`    | 아랍 문자 범위                                                     |
+| `num`   | `.ml-num`   | `[0-9]+`                                                           |
+| `punct` | `.ml-punct` | 괄호, 마침표, 쉼표 등 주요 문장부호                                |
 
 ## 커스텀 문자셋
 
@@ -144,7 +145,7 @@ new MultiLingual({
 `data-ml-ignore`를 붙인 영역은 처리하지 않습니다.
 
 ```html
-<pre data-ml-ignore>const license = "CCL";</pre>
+<pre data-ml-ignore>이 태그에 묶인 텍스트에는 라이브러리가 적용되지 않습니다.</pre>
 ```
 
 ## 되돌리기
