@@ -31,13 +31,38 @@ new MultiLingual({
 원본:
 
 ```html
-<p>모든 CCL의 메타데이터에는 최소한 license 값을 기술하는 1개의 RDF 트리플이 반드시 포함됩니다.</p>
+<p>섞어짜기란 Korean과 Latin alphabet의 서로 다른 height, weight, rhythm을 조율해 하나의 sentence 안에서 자연스러운 balance와 flow를 만드는 typography 방식이다.</p>
 ```
 
 처리 후:
 
 ```html
-<p>모든 <span class="ml-en">CCL</span>의 메타데이터에는 최소한 <span class="ml-en">license</span> 값을 기술하는 <span class="ml-num">1</span>개의 <span class="ml-en">RDF</span> 트리플이 반드시 포함됩니다.</p>
+<p>
+  <span class="ml-ko">섞어짜기란</span>
+  <span class="ml-en">Korean</span>
+  <span class="ml-ko">과</span>
+  <span class="ml-en">Latin</span>
+  <span class="ml-en">alphabet</span>
+  <span class="ml-ko">의</span>
+  <span class="ml-ko">서로</span>
+  <span class="ml-ko">다른</span>
+  <span class="ml-en">height</span>,
+  <span class="ml-en">weight</span>,
+  <span class="ml-en">rhythm</span>
+  <span class="ml-ko">을</span>
+  <span class="ml-ko">조율해</span>
+  <span class="ml-ko">하나의</span>
+  <span class="ml-en">sentence</span>
+  <span class="ml-ko">안에서</span>
+  <span class="ml-ko">자연스러운</span>
+  <span class="ml-en">balance</span>
+  <span class="ml-ko">와</span>
+  <span class="ml-en">flow</span>
+  <span class="ml-ko">를</span>
+  <span class="ml-ko">만드는</span>
+  <span class="ml-en">typography</span>
+  <span class="ml-ko">방식이다</span>.
+</p>
 ```
 
 ## 기본 문자셋
