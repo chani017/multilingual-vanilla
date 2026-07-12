@@ -144,9 +144,7 @@ new MultiLingual({
 `data-ml-ignore`를 붙인 영역은 처리하지 않습니다.
 
 ```html
-<pre data-ml-ignore>
-이 태그에 묶인 텍스트에는 라이브러리가 적용되지 않습니다.</pre
->
+<pre data-ml-ignore>이 태그에 묶인 텍스트에는 라이브러리가 적용되지 않습니다.</pre>
 ```
 
 ## 되돌리기
