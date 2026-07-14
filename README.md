@@ -154,8 +154,6 @@ new MultiLingual({
 
 언어 문맥은 가장 가까운 텍스트 블록을 기준으로 판단합니다. 기본적으로 문단, 목록, 제목, 표 셀뿐 아니라 `div`, `article`, `section`, `main`, `aside`, `header`, `footer`, `nav`, `figure`, `details`, `summary`, 폼과 버튼 영역도 문맥 요소로 사용합니다. 프로젝트의 컴포넌트 구조가 다르면 `langContextSel`에 원하는 선택자를 지정할 수 있습니다.
 
-기존의 긴 옵션 이름인 `punctuation`, `punctuationClass`, `contextualJapaneseHan`, `contextualPunctuation`, `languageContextSelector`, `skipSelector`, `processedAttribute`, `configuration`, `containers`도 호환을 위해 계속 지원합니다. 새 코드에서는 짧은 이름을 권장합니다.
-
 `data-ml-ignore`를 붙인 영역은 처리하지 않습니다.
 
 ```html
