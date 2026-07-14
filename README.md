@@ -18,6 +18,8 @@
 
 위 코드를 html에 삽입하면 라이브러리를 사용할 수 있습니다.
 
+이 패키지는 CSS를 포함하지 않습니다. JavaScript는 텍스트를 `<span>`으로 감싸고 `ml-ko`, `ml-en` 같은 클래스만 부여하므로, 프로젝트 CSS에서 각 클래스를 직접 스타일링하기 전에는 시각적인 변화가 없습니다.
+
 또는 원본 npm API와 비슷하게 쓸 수 있습니다.
 
 ```js
@@ -26,13 +28,17 @@ new MultiLingual({
 });
 ```
 
-설정을 생략하면 `PRESETS`에 등록된 기본 문자셋 중 문장부호를 제외한 문자셋이 자동으로 적용됩니다. 한글이 있으면 `.ml-ko`, 영문이 있으면 `.ml-en`, 숫자가 있으면 `.ml-num`처럼 대응하는 class로 감싸집니다. 문장부호는 CJK 금칙 줄바꿈을 방해할 수 있어 자동 적용에서 제외됩니다. 필요한 경우 `punctuation` 옵션으로 원하는 문장부호만 추가할 수 있습니다.
+설정을 생략하면 `PRESETS`에 등록된 기본 문자셋 중 문장부호를 제외한 문자셋이 자동으로 적용됩니다. 한글이 있으면 `.ml-ko`, 영문이 있으면 `.ml-en`, 숫자가 있으면 `.ml-num`처럼 대응하는 class로 감싸집니다. 문장부호는 CJK 금칙 줄바꿈을 방해할 수 있어 자동 적용에서 제외됩니다. 필요한 경우 `punct` 옵션으로 원하는 문장부호만 추가할 수 있습니다.
 
-또한 `lang="ja"` 또는 `lang="jp"` 문맥 안의 한자는 기본적으로 `.ml-jp`로 처리됩니다. 일본어 문장 안의 한자가 중국어 폰트 규칙인 `.ml-cn`을 타지 않게 하기 위한 보정입니다. 이 동작을 끄려면 `contextualJapaneseHan: false`를 넘기면 됩니다.
+또한 가장 가까운 텍스트 블록이나 그 내부 요소가 `lang="ja"` 또는 `lang="jp"`로 지정되어 있으면, 해당 문맥의 한자는 기본적으로 `.ml-jp`로 처리됩니다. 일본어 문장 안의 한자가 중국어 폰트 규칙인 `.ml-cn`을 타지 않게 하기 위한 보정입니다.
+
+가장 가까운 텍스트 블록이나 그 내부 요소에 `lang`이 지정되어 있으면 그 값을 가장 먼저 따릅니다. `lang`이 없는 텍스트 블록에 히라가나 또는 가타카나가 포함되어 있으면 일본어 문맥으로 판단하여 같은 블록의 한자도 `.ml-jp`로 처리합니다. 한자만 있는 블록은 기본적으로 중국어 문맥인 `.ml-cn`으로 처리하므로, 일본어 한자만으로 이루어진 블록에는 `lang="ja"`를 지정해야 합니다. 이 동작을 끄려면 `contextJpHan: false`를 넘기면 됩니다.
+
+문장부호를 처리할 때도 같은 텍스트 블록의 문맥을 따릅니다. 블록이나 그 내부 요소에 지정된 `lang`을 우선하고, 없으면 가나, 한글, 아랍 문자, 한자, 라틴 문자 순서로 문맥을 판단합니다. 따라서 일본어 블록의 문장부호에는 `.ml-punct.ml-jp`, 한국어에는 `.ml-punct.ml-ko`, 아랍어에는 `.ml-punct.ml-ar`, 중국어에는 `.ml-punct.ml-cn`, 영어에는 `.ml-punct.ml-en`이 적용됩니다. 이 동작을 끄려면 `contextPunct: false`를 넘기면 됩니다.
 
 ```js
 MultiLingual.run("body", {
-	punctuation: "?!(),.，。、；;：“”‘’「」『』（）-_",
+	punct: "?!(),.，。、；;：“”‘’「」『』（）-_",
 });
 ```
 
@@ -131,15 +137,24 @@ MultiLingual.run("body", [
 
 ```js
 new MultiLingual({
-	containers: "body",
-	configuration: ["ko", "en"],
+	container: "body",
+	config: ["ko", "en"],
 	prefix: "ml-",
-	skipSelector:
+	punct: "?!(),.",
+	punctClass: "ml-punct",
+	skipSel:
 		"script, style, textarea, input, select, option, code, pre, [data-ml-ignore]",
-	processedAttribute: "data-ml-processed",
-	contextualJapaneseHan: true,
+	processedAttr: "data-ml-processed",
+	contextJpHan: true,
+	contextPunct: true,
+	langContextSel: MultiLingual.langContextSel + ", .text-block",
+	autoInit: true,
 });
 ```
+
+언어 문맥은 가장 가까운 텍스트 블록을 기준으로 판단합니다. 기본적으로 문단, 목록, 제목, 표 셀뿐 아니라 `div`, `article`, `section`, `main`, `aside`, `header`, `footer`, `nav`, `figure`, `details`, `summary`, 폼과 버튼 영역도 문맥 요소로 사용합니다. 프로젝트의 컴포넌트 구조가 다르면 `langContextSel`에 원하는 선택자를 지정할 수 있습니다.
+
+기존의 긴 옵션 이름인 `punctuation`, `punctuationClass`, `contextualJapaneseHan`, `contextualPunctuation`, `languageContextSelector`, `skipSelector`, `processedAttribute`, `configuration`, `containers`도 호환을 위해 계속 지원합니다. 새 코드에서는 짧은 이름을 권장합니다.
 
 `data-ml-ignore`를 붙인 영역은 처리하지 않습니다.
 

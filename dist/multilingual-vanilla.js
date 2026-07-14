@@ -19,7 +19,7 @@
     ko: "[ㄱ-ㅎ가-힣ㅏ-ㅣ]+",
     jp: "[\\u3040-\\u309F\\u30A0-\\u30FF]+",
     cn: "[\\u4E00-\\u9FBF]+",
-    ar: "[\\u0600-\\u06ff\\u0750-\\u077f\\ufb50-\\ufc3f\\ufe70-\\ufefc]+",
+    ar: "[\\u0620-\\u065F\\u066E-\\u06D3\\u06D5-\\u06FF\\u0750-\\u077F\\u08A0-\\u08FF\\uFB50-\\uFC3F\\uFE70-\\uFEFC]+",
     num: "[0-9]+",
     punct: "[（）().#\\^\\\\\\-&,;:<>“”‘’/@%*，、。」]+"
   };
@@ -27,20 +27,35 @@
   var DEFAULT_SKIP_SELECTOR =
     "script, style, textarea, input, select, option, code, pre, [data-ml-ignore]";
 
+  var LANGUAGE_CONTEXT_SELECTOR =
+    "p, li, dt, dd, blockquote, figcaption, caption, th, td, h1, h2, h3, h4, h5, h6, " +
+    "address, article, aside, div, footer, header, main, nav, section, figure, details, " +
+    "summary, dialog, form, fieldset, legend, button, label";
+
   function MultiLingual(params) {
     params = params || {};
 
-    this.containers = normalizeContainers(params.containers || params.container || []);
+    this.containers = normalizeContainers(params.container || params.containers || []);
     this.configuration = getConfiguration(params);
     this.prefix = params.prefix || "ml-";
-    this.contextualJapaneseHan = params.contextualJapaneseHan !== false;
-    this.contextualPunctuation = params.contextualPunctuation !== false;
-    this.skipSelector = params.skipSelector || DEFAULT_SKIP_SELECTOR;
-    this.processedAttribute = params.processedAttribute || "data-ml-processed";
+    this.contextualJapaneseHan =
+      getOption(params, "contextJpHan", "contextualJapaneseHan", true) !== false;
+    this.contextualPunctuation =
+      getOption(params, "contextPunct", "contextualPunctuation", true) !== false;
+    this.languageContextSelector =
+      getOption(params, "langContextSel", "languageContextSelector", LANGUAGE_CONTEXT_SELECTOR) ||
+      LANGUAGE_CONTEXT_SELECTOR;
+    this.skipSelector =
+      getOption(params, "skipSel", "skipSelector", DEFAULT_SKIP_SELECTOR) ||
+      DEFAULT_SKIP_SELECTOR;
+    this.processedAttribute =
+      getOption(params, "processedAttr", "processedAttribute", "data-ml-processed") ||
+      "data-ml-processed";
     this.processedClass = params.processedClass || "ml-processed";
     this.autoInit = params.autoInit !== false;
 
     this.rules = this.normalizeConfiguration(this.configuration);
+    this.punctuationClass = getRuleClassName(this.rules, "punct") || this.prefix + "punct";
     this.finalRegex = this.composeRegex(this.rules);
 
     if (this.autoInit) {
@@ -51,6 +66,9 @@
   MultiLingual.presets = PRESETS;
   MultiLingual.autoConfiguration = getAutoConfiguration;
   MultiLingual.skipSelector = DEFAULT_SKIP_SELECTOR;
+  MultiLingual.languageContextSelector = LANGUAGE_CONTEXT_SELECTOR;
+  MultiLingual.skipSel = DEFAULT_SKIP_SELECTOR;
+  MultiLingual.langContextSel = LANGUAGE_CONTEXT_SELECTOR;
 
   MultiLingual.run = function (containers, configuration, options) {
     if (configuration === null) {
@@ -152,17 +170,21 @@
       this.contextualJapaneseHan &&
       className === this.prefix + "cn" &&
       parent &&
-      isJapaneseContext(parent)
+      isJapaneseContext(parent, this.prefix, this.languageContextSelector)
     ) {
       return this.prefix + "jp";
     }
 
     if (
       this.contextualPunctuation &&
-      className === this.prefix + "punct" &&
+      className === this.punctuationClass &&
       parent
     ) {
-      var contextualClassName = getContextualClassName(parent, this.prefix);
+      var contextualClassName = getResolvedContextClassName(
+        parent,
+        this.prefix,
+        this.languageContextSelector
+      );
       if (contextualClassName && contextualClassName !== className) {
         return className + " " + contextualClassName;
       }
@@ -254,10 +276,10 @@
   function getConfiguration(params) {
     var configuration;
 
-    if (Object.prototype.hasOwnProperty.call(params, "configuration")) {
-      configuration = params.configuration;
-    } else if (Object.prototype.hasOwnProperty.call(params, "config")) {
+    if (Object.prototype.hasOwnProperty.call(params, "config")) {
       configuration = params.config;
+    } else if (Object.prototype.hasOwnProperty.call(params, "configuration")) {
+      configuration = params.configuration;
     } else {
       configuration = getAutoConfiguration();
     }
@@ -326,8 +348,70 @@
     container.normalize();
   }
 
-  function isJapaneseContext(element) {
-    return getContextualClassName(element, "ml-") === "ml-jp";
+  function isJapaneseContext(element, prefix, contextSelector) {
+    return getResolvedContextClassName(element, prefix, contextSelector) === prefix + "jp";
+  }
+
+  function getResolvedContextClassName(element, prefix, contextSelector) {
+    var contextElement = getLanguageContextElement(element, contextSelector);
+    var localLang = getLangWithin(element, contextElement);
+
+    if (localLang !== null) {
+      return getClassNameFromLang(localLang, prefix);
+    }
+
+    var inferredClassName = inferContextClassName(contextElement.textContent, prefix);
+    if (inferredClassName) {
+      return inferredClassName;
+    }
+
+    return getContextualClassName(contextElement.parentElement, prefix);
+  }
+
+  function getLanguageContextElement(element, contextSelector) {
+    var current = element;
+
+    while (current && current.nodeType === 1) {
+      if (matches(current, contextSelector)) {
+        return current;
+      }
+
+      current = current.parentElement;
+    }
+
+    return element;
+  }
+
+  function getLangWithin(element, boundary) {
+    var current = element;
+
+    while (current && current.nodeType === 1) {
+      if (current.hasAttribute && current.hasAttribute("lang")) {
+        return current.getAttribute("lang");
+      }
+
+      if (current === boundary) {
+        break;
+      }
+
+      current = current.parentElement;
+    }
+
+    return null;
+  }
+
+  function inferContextClassName(text, prefix) {
+    var value = String(text || "");
+
+    if (/[\u3040-\u309F\u30A0-\u30FF]/.test(value)) return prefix + "jp";
+    if (/[ㄱ-ㅎ가-힣ㅏ-ㅣ]/.test(value)) return prefix + "ko";
+    if (/[\u0620-\u065F\u066E-\u06D3\u06D5-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFC3F\uFE70-\uFEFC]/.test(value)) {
+      return prefix + "ar";
+    }
+    if (/[\u4E00-\u9FBF]/.test(value)) return prefix + "cn";
+    if (/[A-Za-z]/.test(value)) return prefix + "en";
+
+    return "";
   }
 
   function getContextualClassName(element, prefix) {
@@ -357,6 +441,16 @@
     return "";
   }
 
+  function getRuleClassName(rules, key) {
+    for (var i = 0; i < rules.length; i += 1) {
+      if (rules[i].key === key) {
+        return rules[i].className;
+      }
+    }
+
+    return "";
+  }
+
   function matches(element, selector) {
     if (!selector || !element || element.nodeType !== 1) return false;
 
@@ -380,24 +474,45 @@
     );
   }
 
+  function getOption(params, shortName, longName, fallback) {
+    if (Object.prototype.hasOwnProperty.call(params, shortName)) {
+      return params[shortName];
+    }
+
+    if (Object.prototype.hasOwnProperty.call(params, longName)) {
+      return params[longName];
+    }
+
+    return fallback;
+  }
+
   function getPunctuationRule(params) {
     var value;
+    var customClassName = params.punctClass || params.punctuationClass;
 
-    if (Object.prototype.hasOwnProperty.call(params, "punctuation")) {
-      value = params.punctuation;
-    } else if (Object.prototype.hasOwnProperty.call(params, "punct")) {
+    if (Object.prototype.hasOwnProperty.call(params, "punct")) {
       value = params.punct;
+    } else if (Object.prototype.hasOwnProperty.call(params, "punctuation")) {
+      value = params.punctuation;
     } else if (params.includePunctuation === true) {
       value = true;
     }
 
     if (!value) return null;
-    if (value === true) return "punct";
+    if (value === true) {
+      if (!customClassName) return "punct";
+
+      return {
+        key: "punct",
+        className: customClassName,
+        regex: PRESETS.punct
+      };
+    }
 
     if (typeof value === "string") {
       return {
         key: "punct",
-        className: params.punctuationClass || (params.prefix || "ml-") + "punct",
+        className: customClassName || (params.prefix || "ml-") + "punct",
         charset: value
       };
     }
